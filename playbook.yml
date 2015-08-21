@@ -1,0 +1,29 @@
+---
+- hosts: localhost  
+  roles:
+  - { role: loranger.debian-nginx, nginx.document_root: /usr/share/nginx/html/, nginx.php_engine: fpm, nginx.port: 80, nginx.workers: 4 }
+  vars:
+    pyenv: ~/svc_pyenv
+  tasks:
+  - name: Install OS common pre-requisites via APT
+    action: apt pkg={{item}} state=latest
+    with_items:
+      - git
+      - python
+      - python-pip
+      - python-virtualenv
+      - python-dev
+      - libyaml-cpp-dev
+      - screen
+    when: ansible_pkg_mgr == "apt"    
+
+  - name: Create the service virtualenv
+    shell: virtualenv {{pyenv}} creates={{pyenv}}
+
+  - name: Copy the requirements.txt to the env folder
+    template: src=files/requirements.txt dest={{pyenv}}
+
+  - name: Install requirements into the virtualenv
+    pip:
+      requirements={{pyenv}}/requirements.txt
+      virtualenv={{pyenv}}
