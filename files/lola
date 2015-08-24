@@ -1,0 +1,9 @@
+server {
+    listen 8080;
+    server_name {{ansible_ec2_public_ipv4}};
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:{{app_path}}/{{app_name}}.sock;
+    }
+} 

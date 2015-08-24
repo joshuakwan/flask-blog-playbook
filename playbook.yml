@@ -1,10 +1,15 @@
 ---
 - hosts: localhost  
-  roles:
-  - { role: loranger.debian-nginx, nginx.document_root: /usr/share/nginx/html/, nginx.php_engine: fpm, nginx.port: 80, nginx.workers: 4 }
   vars:
-    pyenv: ~/svc_pyenv
+    app_name: lola
+    app_user: ubuntu
+    app_path: /home/{{app_user}}/{{app_name}}
+    app_pyenv: "{{app_path}}/pyenv"
+    app_runlevel: 2345  
   tasks:
+  - name: Gather EC2 facts
+    action: ec2_facts
+
   - name: Install OS common pre-requisites via APT
     action: apt pkg={{item}} state=latest
     with_items:
@@ -15,15 +20,39 @@
       - python-dev
       - libyaml-cpp-dev
       - screen
+      - nginx
     when: ansible_pkg_mgr == "apt"    
 
+  - name: Copy the webapp files
+    copy: src=webapp/ dest={{app_path}}   
+
   - name: Create the service virtualenv
-    shell: virtualenv {{pyenv}} creates={{pyenv}}
+    shell: virtualenv {{app_pyenv}} creates={{app_pyenv}}
 
   - name: Copy the requirements.txt to the env folder
-    template: src=files/requirements.txt dest={{pyenv}}
+    template: src=files/requirements.txt dest={{app_pyenv}}
 
   - name: Install requirements into the virtualenv
     pip:
-      requirements={{pyenv}}/requirements.txt
-      virtualenv={{pyenv}}
+      requirements={{app_pyenv}}/requirements.txt
+      virtualenv={{app_pyenv}}
+
+  - name: Add the uwsgi config to /etc/config
+    template: src=files/lola.conf dest=/etc/init/lola.conf
+
+  - name: Add the nginx conf to /etc/nginx/sites-available
+    template: src=files/lola dest=/etc/nginx/sites-available/lola
+
+  - name: Link conf from /etc/nginx/sites-available/ to /etc/nginx/sites-enabled
+    file: src=/etc/nginx/sites-available/lola
+          dest=/etc/nginx/sites-enabled/lola
+          state=link
+
+  - name: Change the owner of the app home to ubuntu:ubuntu
+    file: path={{app_path}} owner={{app_user}} group={{app_user}}
+
+  - name: Start the webapp process
+    shell: start {{app_name}}
+
+  - name: Restart nginx 
+    service: name=nginx state=restarted
