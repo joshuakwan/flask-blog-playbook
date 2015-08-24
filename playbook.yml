@@ -51,8 +51,8 @@
   - name: Change the owner of the app home to ubuntu:ubuntu
     file: path={{app_path}} owner={{app_user}} group={{app_user}}
 
-  - name: Start the webapp process
-    shell: start {{app_name}}
+  - name: (Re)Start the webapp process
+    service: name=lola state=restarted
 
   - name: Restart nginx 
     service: name=nginx state=restarted
