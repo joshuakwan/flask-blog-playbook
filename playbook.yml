@@ -38,21 +38,22 @@
       virtualenv={{app_pyenv}}
 
   - name: Add the uwsgi config to /etc/config
-    template: src=files/lola.conf dest=/etc/init/lola.conf
+    template: src=files/lola.conf dest=/etc/init/{{app_name}}.conf
 
   - name: Add the nginx conf to /etc/nginx/sites-available
-    template: src=files/lola dest=/etc/nginx/sites-available/lola
+    template: src=files/lola dest=/etc/nginx/sites-available/{{app_name}}
 
   - name: Link conf from /etc/nginx/sites-available/ to /etc/nginx/sites-enabled
-    file: src=/etc/nginx/sites-available/lola
-          dest=/etc/nginx/sites-enabled/lola
+    file: src=/etc/nginx/sites-available/{{app_name}}
+          dest=/etc/nginx/sites-enabled/{{app_name}}
           state=link
 
   - name: Change the owner of the app home to ubuntu:ubuntu
     file: path={{app_path}} owner={{app_user}} group={{app_user}}
 
   - name: (Re)Start the webapp process
-    service: name=lola state=restarted
+    service: name={{app_name}} state=restarted
 
   - name: Restart nginx 
     service: name=nginx state=restarted
+
