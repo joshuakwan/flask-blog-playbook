@@ -1,5 +1,7 @@
 server {
-    listen 80;
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+    
     server_name {{ansible_ec2_public_ipv4}};
 
     location / {

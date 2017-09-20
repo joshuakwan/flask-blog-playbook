@@ -43,6 +43,11 @@
 
   - name: Add the nginx conf to /etc/nginx/sites-available
     template: src=files/{{app_name}} dest=/etc/nginx/sites-available/{{app_name}}
+    
+  - name: Remove default nginx site
+    file:
+      path: /etc/nginx/sites-available/default
+      state: absent
 
   - name: Link conf from /etc/nginx/sites-available/ to /etc/nginx/sites-enabled
     file: src=/etc/nginx/sites-available/{{app_name}}
