@@ -1,7 +1,7 @@
 ---
 - hosts: localhost  
   vars:
-    app_name: lola
+    app_name: flask_blog
     app_user: ubuntu
     app_path: /home/{{app_user}}/{{app_name}}
     app_pyenv: "{{app_path}}/pyenv"
@@ -38,10 +38,10 @@
       virtualenv={{app_pyenv}}
 
   - name: Add the uwsgi config to /etc/config
-    template: src=files/lola.conf dest=/etc/init/{{app_name}}.conf
+    template: src=files/{{app_name}}.conf dest=/etc/init/{{app_name}}.conf
 
   - name: Add the nginx conf to /etc/nginx/sites-available
-    template: src=files/lola dest=/etc/nginx/sites-available/{{app_name}}
+    template: src=files/{{app_name}} dest=/etc/nginx/sites-available/{{app_name}}
 
   - name: Link conf from /etc/nginx/sites-available/ to /etc/nginx/sites-enabled
     file: src=/etc/nginx/sites-available/{{app_name}}

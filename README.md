@@ -1,1 +1,1 @@
-# lola-web-service
+# Ansible playbook for deploying Flask-blogging
