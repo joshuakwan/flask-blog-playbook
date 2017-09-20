@@ -18,6 +18,7 @@
       - python-pip
       - python-virtualenv
       - python-dev
+      - python-mysqldb
       - libyaml-cpp-dev
       - screen
       - nginx

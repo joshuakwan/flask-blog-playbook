@@ -1,4 +1,4 @@
-from flask_blog import application
+from flask_blog import app
 
 if __name__ == "__main__":
-    application.run(debug=True)
+    app.run(host='0.0.0.0', port=8080)
