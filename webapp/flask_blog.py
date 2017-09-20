@@ -4,24 +4,24 @@ from flask_login import UserMixin, LoginManager, login_user, logout_user
 from flask_blogging import SQLAStorage, BloggingEngine
 from markdown.extensions.codehilite import CodeHiliteExtension
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "secret"  # for WTF-forms and login
-app.config["BLOGGING_URL_PREFIX"] = "/blog"
-app.config["BLOGGING_DISQUS_SITENAME"] = "test"
-app.config["BLOGGING_SITEURL"] = "http://0.0.0.0:8080"
-app.config["BLOGGING_SITENAME"] = "My Site"
-app.config["BLOGGING_KEYWORDS"] = ["blog", "meta", "keywords"]
-app.config["FILEUPLOAD_IMG_FOLDER"] = "fileupload"
-app.config["FILEUPLOAD_PREFIX"] = "/fileupload"
-app.config["FILEUPLOAD_ALLOWED_EXTENSIONS"] = ["png", "jpg", "jpeg", "gif"]
+application = Flask(__name__)
+application.config["SECRET_KEY"] = "secret"  # for WTF-forms and login
+application.config["BLOGGING_URL_PREFIX"] = "/blog"
+application.config["BLOGGING_DISQUS_SITENAME"] = "test"
+application.config["BLOGGING_SITEURL"] = "http://0.0.0.0:80"
+application.config["BLOGGING_SITENAME"] = "My Site"
+application.config["BLOGGING_KEYWORDS"] = ["blog", "meta", "keywords"]
+application.config["FILEUPLOAD_IMG_FOLDER"] = "fileupload"
+application.config["FILEUPLOAD_PREFIX"] = "/fileupload"
+application.config["FILEUPLOAD_ALLOWED_EXTENSIONS"] = ["png", "jpg", "jpeg", "gif"]
 
 # extensions
 engine = create_engine('sqlite:////tmp/blog.db')
 meta = MetaData()
 sql_storage = SQLAStorage(engine, metadata=meta)
 extn1 = CodeHiliteExtension({})
-blog_engine = BloggingEngine(app, sql_storage, extensions=[extn1])
-login_manager = LoginManager(app)
+blog_engine = BloggingEngine(application, sql_storage, extensions=[extn1])
+login_manager = LoginManager(application)
 meta.create_all(bind=engine)
 
 
@@ -55,17 +55,17 @@ index_template = """
 </html>
 """
 
-@app.route("/")
+@application.route("/")
 def index():
     return render_template_string(index_template)
 
-@app.route("/login/")
+@application.route("/login/")
 def login():
     user = User("testuser")
     login_user(user)
     return redirect("/blog")
 
-@app.route("/logout/")
+@application.route("/logout/")
 def logout():
     logout_user()
     return redirect("/")

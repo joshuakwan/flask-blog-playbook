@@ -8,7 +8,7 @@
     app_runlevel: 2345  
   tasks:
   - name: Gather EC2 facts
-    action: ec2_facts
+    action: ec2_metadata_facts
 
   - name: Install OS common pre-requisites via APT
     action: apt pkg={{item}} state=latest
