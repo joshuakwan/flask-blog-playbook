@@ -1,0 +1,5 @@
+app_name: flask_blog
+app_user: ubuntu
+app_path: /home/{{app_user}}/{{app_name}}
+app_pyenv: "{{app_path}}/pyenv"
+app_runlevel: 2345  
